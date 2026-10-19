@@ -9,3 +9,4 @@ Each exercise has a GitHub release tagged with its number (e.g. `1.1`). Each lin
 ### Chapter 2 — Kubernetes basics
 
 - [1.1.](https://github.com/milaneuh/KubernetesSubmissions/tree/1.1/log_output)
+- [1.2.](https://github.com/milaneuh/KubernetesSubmissions/tree/1.2/the_project/todo_app)
