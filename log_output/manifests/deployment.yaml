@@ -14,4 +14,7 @@ spec:
     spec:
       containers:
         - name: hashgenerator
-          image: m17an/hashgen:v2
+          image: m17an/hashgen:v3
+          env:
+          - name: PORT
+            value: "3010"
