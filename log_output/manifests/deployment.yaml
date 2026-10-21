@@ -12,9 +12,26 @@ spec:
       labels:
         app: hashgenerator
     spec:
+      volumes:
+        - name: shared-image
+          emptyDir: {}
       containers:
-        - name: hashgenerator
+        - name: hashgenerator-writer
+          image: m17an/hashgen:v3
+          env:
+          - name: LOG_FILE
+            value: "/usr/src/app/file/log_output.txt"
+          volumeMounts:
+          - name: shared-image
+            mountPath: /usr/src/app/files
+
+        - name: hashgenerator-reader
           image: m17an/hashgen:v3
           env:
           - name: PORT
             value: "3010"
+          - name: LOG_FILE
+            value: "/usr/src/app/file/log_output.txt"
+          volumeMounts:
+          - name: shared-image
+            mountPath: /usr/src/app/files
