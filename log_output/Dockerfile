@@ -3,12 +3,11 @@ ARG TARGETOS TARGETARCH
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
-COPY main.go ./
-RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o /todo_app
+COPY . .
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o /log_output
 
 FROM gcr.io/distroless/static
-COPY --from=build /todo_app /todo_app
+COPY --from=build /log_output /log_output
 
-ENV PORT=8080
-
-CMD ["/todo_app"]
+# No PORT here: without PORT the binary runs as the writer, with PORT as the reader.
+ENTRYPOINT ["/log_output"]

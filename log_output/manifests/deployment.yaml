@@ -14,24 +14,19 @@ spec:
     spec:
       volumes:
         - name: shared-image
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: image-claim
       containers:
         - name: hashgenerator-writer
-          image: m17an/hashgen:v3
-          env:
-          - name: LOG_FILE
-            value: "/usr/src/app/file/log_output.txt"
+          image: m17an/hashgen:v5
           volumeMounts:
-          - name: shared-image
-            mountPath: /usr/src/app/files
-
+            - name: shared-image
+              mountPath: /usr/src/app/files
         - name: hashgenerator-reader
-          image: m17an/hashgen:v3
+          image: m17an/hashgen:v5
           env:
-          - name: PORT
-            value: "3010"
-          - name: LOG_FILE
-            value: "/usr/src/app/file/log_output.txt"
+            - name: PORT
+              value: "3010"
           volumeMounts:
-          - name: shared-image
-            mountPath: /usr/src/app/files
+            - name: shared-image
+              mountPath: /usr/src/app/files

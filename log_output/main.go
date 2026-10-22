@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -44,15 +45,28 @@ func filePath() string {
 	return "/usr/src/app/files/log_output.txt"
 }
 
-func HashHandler(w http.ResponseWriter, r *http.Request) {
-	v, err := os.ReadFile(filePath())
+func pongFilePath() string {
+	if p := os.Getenv("PONG_FILE"); p != "" {
+		return p
+	}
+	return "/usr/src/app/files/pingpong_output.txt"
+}
 
+func HashHandler(w http.ResponseWriter, r *http.Request) {
+	log_v, err := os.ReadFile(filePath())
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		http.Error(w, "log file not available yet", http.StatusServiceUnavailable)
+		return
+	}
+
+	pongs := "0"
+	if pong_v, err := os.ReadFile(pongFilePath()); err == nil {
+		pongs = strings.TrimSpace(string(pong_v))
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(v))
+	w.Write([]byte(strings.TrimSpace(string(log_v)) + ".\nPing / Pongs: " + pongs + "\n"))
 }
 
 func PeriodicallyPrintHash(hash string) {

@@ -12,9 +12,18 @@ spec:
       labels:
         app: pingpong
     spec:
+      volumes:
+        - name: shared-image
+          persistentVolumeClaim:
+            claimName: image-claim
       containers:
         - name: pingpong
-          image: m17an/pingpong:v1
+          image: m17an/pingpong:v3
           env:
-          - name: PORT
-            value: "3020"
+            - name: PORT
+              value: "3020"
+            - name: PONG_FILE
+              value: /usr/src/app/files/pingpong_output.txt
+          volumeMounts:
+            - name: shared-image
+              mountPath: /usr/src/app/files

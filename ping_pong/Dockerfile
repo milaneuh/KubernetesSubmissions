@@ -3,7 +3,7 @@ ARG TARGETOS TARGETARCH
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
-COPY main.go ./
+COPY . .
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o /pingpong
 
 FROM gcr.io/distroless/static
@@ -11,4 +11,4 @@ COPY --from=build /pingpong /pingpong
 
 ENV PORT=8080
 
-CMD ["/pingpong"]
+ENTRYPOINT ["/pingpong"]
