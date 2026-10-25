@@ -37,6 +37,7 @@ func main() {
 	mux.Handle("GET /static/", http.StripPrefix("/static", fileserver))
 	mux.HandleFunc("GET /{$}", app.home)
 	mux.HandleFunc("GET /image", app.image)
+	mux.HandleFunc("POST /new-todo", app.newTodo)
 
 	// JSON endpoints
 	mux.HandleFunc("GET /api/healthz", app.healthz)

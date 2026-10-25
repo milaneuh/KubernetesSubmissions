@@ -18,7 +18,7 @@ spec:
             claimName: todo-image-claim
       containers:
         - name: todo-app
-          image: m17an/todo_app:v11
+          image: m17an/todo_app:v12
           env:
           - name: PORT
             value: "3000"
