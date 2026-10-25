@@ -19,3 +19,4 @@ Each exercise has a GitHub release tagged with its number (e.g. `1.1`). Each lin
 - [1.9.](https://github.com/milaneuh/KubernetesSubmissions/tree/1.9)
 - [1.10.](https://github.com/milaneuh/KubernetesSubmissions/tree/1.10)
 - [1.11.](https://github.com/milaneuh/KubernetesSubmissions/tree/1.11)
+- [1.12.](https://github.com/milaneuh/KubernetesSubmissions/tree/1.12)

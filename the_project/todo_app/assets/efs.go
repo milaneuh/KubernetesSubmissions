@@ -5,13 +5,10 @@ import (
 	"io/fs"
 )
 
-//go:embed all:html all:static
+//go:embed all:static
 var files embed.FS
 
-var (
-	HTMLFiles   = sub(files, "html")
-	StaticFiles = sub(files, "static")
-)
+var StaticFiles = sub(files, "static")
 
 func sub(f embed.FS, dir string) fs.FS {
 	sub, err := fs.Sub(f, dir)
