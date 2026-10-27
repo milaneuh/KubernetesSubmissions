@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -45,11 +46,23 @@ func filePath() string {
 	return "/usr/src/app/files/log_output.txt"
 }
 
-func pongFilePath() string {
-	if p := os.Getenv("PONG_FILE"); p != "" {
-		return p
+func fetchPongs() (string, error) {
+	client := http.Client{Timeout: 2 * time.Second}
+	resp, err := client.Get("http://pingpong-svc:2345/pingpong/pings")
+	if err != nil {
+		return "", err
 	}
-	return "/usr/src/app/files/pingpong_output.txt"
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("ping_pong returned %s", resp.Status)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(string(body)), nil
 }
 
 func HashHandler(w http.ResponseWriter, r *http.Request) {
@@ -60,9 +73,10 @@ func HashHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pongs := "0"
-	if pong_v, err := os.ReadFile(pongFilePath()); err == nil {
-		pongs = strings.TrimSpace(string(pong_v))
+	pongs, err := fetchPongs()
+	if err != nil {
+		log.Println(err)
+		pongs = "0"
 	}
 
 	w.WriteHeader(http.StatusOK)

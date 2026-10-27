@@ -99,7 +99,7 @@ func PullImage(path string) error {
 	}
 
 	start := time.Now()
-	resp, err := http.Get("https://picsum.photos/1200")
+	resp, err := http.Get("http://pingpong-svc:2345/ping")
 	if err != nil {
 		return err
 	}

@@ -18,7 +18,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	http.HandleFunc("/", PingHandler)
+	// Full paths: the ingress forwards /pingpong... without stripping the prefix
+	http.HandleFunc("/pingpong", PingHandler)
+	http.HandleFunc("/pingpong/pings", PingsHandler)
 
 	log.Println("Server started in port " + port)
 	http.ListenAndServe(":"+port, nil)
@@ -41,4 +43,10 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("pong " + strconv.Itoa(counter)))
+}
+
+// PingsHandler returns the current count without incrementing it.
+func PingsHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(strconv.Itoa(counter)))
 }

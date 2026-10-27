@@ -18,12 +18,12 @@ spec:
             claimName: image-claim
       containers:
         - name: hashgenerator-writer
-          image: m17an/hashgen:v5
+          image: m17an/hashgen:v8
           volumeMounts:
             - name: shared-image
               mountPath: /usr/src/app/files
         - name: hashgenerator-reader
-          image: m17an/hashgen:v5
+          image: m17an/hashgen:v8
           env:
             - name: PORT
               value: "3010"

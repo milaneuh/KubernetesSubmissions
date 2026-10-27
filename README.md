@@ -21,3 +21,7 @@ Each exercise has a GitHub release tagged with its number (e.g. `1.1`). Each lin
 - [1.11.](https://github.com/milaneuh/KubernetesSubmissions/tree/1.11)
 - [1.12.](https://github.com/milaneuh/KubernetesSubmissions/tree/1.12)
 - [1.13.](https://github.com/milaneuh/KubernetesSubmissions/tree/1.13)
+
+### Chapter 2 — Networking between pods
+
+- [2.1.](https://github.com/milaneuh/KubernetesSubmissions/tree/2.1)

@@ -18,7 +18,7 @@ spec:
             claimName: image-claim
       containers:
         - name: pingpong
-          image: m17an/pingpong:v3
+          image: m17an/pingpong:v6
           env:
             - name: PORT
               value: "3020"
