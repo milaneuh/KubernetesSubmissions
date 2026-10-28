@@ -8,7 +8,7 @@ package views
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func TodoList() templ.Component {
+func TodoList(todos []string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -29,7 +29,15 @@ func TodoList() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section style=\"margin-bottom: 2rem;\"><form id=\"todo-form\" hx-post=\"/new-todo\" hx-target=\"#todo-list\" hx-swap=\"beforeend\" hx-on::after-request=\"this.reset()\" style=\"display: flex; gap: 0.5rem; width: 100%;\"><input type=\"text\" name=\"todo-input\" placeholder=\"Enter a new todo (max 140 characters)\" max=\"140\" style=\"flex-grow: 1; margin: 0;\"> <button type=\"submit\" style=\"margin: 0;\">Send</button></form></section><section><h2>My Tasks</h2><ul id=\"todo-list\" style=\"list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;\"></ul></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section style=\"margin-bottom: 2rem;\"><form id=\"todo-form\" hx-post=\"/new-todo\" hx-target=\"#todo-list\" hx-swap=\"innerHTML\" hx-on::after-request=\"this.reset()\" style=\"display: flex; gap: 0.5rem; width: 100%;\"><input type=\"text\" name=\"todo-input\" placeholder=\"Enter a new todo (max 140 characters)\" max=\"140\" style=\"flex-grow: 1; margin: 0;\"> <button type=\"submit\" style=\"margin: 0;\">Send</button></form></section><section><h2>My Tasks</h2><ul id=\"todo-list\" style=\"list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = Todo(todos).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</ul></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

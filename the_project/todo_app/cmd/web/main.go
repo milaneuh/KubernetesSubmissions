@@ -39,9 +39,6 @@ func main() {
 	mux.HandleFunc("GET /image", app.image)
 	mux.HandleFunc("POST /new-todo", app.newTodo)
 
-	// JSON endpoints
-	mux.HandleFunc("GET /api/healthz", app.healthz)
-
 	log.Println("Server started in port " + port)
 	err := http.ListenAndServe(":"+port, mux)
 	if err != nil {

@@ -1,12 +1,12 @@
 package views
 
-templ TodoList() {
+templ TodoList(todos []string) {
 	<section style="margin-bottom: 2rem;">
 		<form
 			id="todo-form"
 			hx-post="/new-todo"
 			hx-target="#todo-list"
-			hx-swap="beforeend"
+			hx-swap="innerHTML"
 			hx-on::after-request="this.reset()"
 			style="display: flex; gap: 0.5rem; width: 100%;"
 		>
@@ -20,8 +20,10 @@ templ TodoList() {
 			<button type="submit" style="margin: 0;">Send</button>
 		</form>
 	</section>
-	<section>
+	<section >
 		<h2>My Tasks</h2>
-		<ul id="todo-list" style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;"></ul>
+		<ul id="todo-list" style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+			@Todo(todos)
+		</ul>
 	</section>
 }

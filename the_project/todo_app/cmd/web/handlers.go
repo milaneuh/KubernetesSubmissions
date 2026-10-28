@@ -1,12 +1,22 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
+	"net/url"
+	"time"
 	"todo_app/views"
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	err := views.Home(imagePath()).Render(r.Context(), w)
+	todos, err := fetchTodos(r.Context())
+	if err != nil {
+		app.logger.Error(err.Error())
+	}
+
+	err = views.Home(imagePath(), todos).Render(r.Context(), w)
 	if err != nil {
 		app.logger.Error(err.Error())
 		http.Error(w, http.StatusText(500), 500)
@@ -18,6 +28,33 @@ func (app *application) image(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, imagePath())
 }
 
+const todoBackendURL = "http://todo-backend-svc:2345/api/todos"
+
+var backendClient = &http.Client{Timeout: 2 * time.Second}
+
+func fetchTodos(ctx context.Context) ([]string, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, todoBackendURL, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := backendClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("todo backend could not list the todos: %s", resp.Status)
+	}
+
+	var todos []string
+	if err := json.NewDecoder(resp.Body).Decode(&todos); err != nil {
+		return nil, err
+	}
+	return todos, nil
+}
+
 func (app *application) newTodo(w http.ResponseWriter, r *http.Request) {
 	todo := r.FormValue("todo-input")
 
@@ -26,15 +63,28 @@ func (app *application) newTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := views.Todo(todo).Render(r.Context(), w)
-
+	resp, err := backendClient.PostForm(todoBackendURL, url.Values{"todo-input": {todo}})
 	if err != nil {
 		app.logger.Error(err.Error())
-		http.Error(w, http.StatusText(500), 500)
+		http.Error(w, "could not reach the todo backend", http.StatusBadGateway)
+		return
 	}
-}
+	defer resp.Body.Close()
 
-func (app *application) healthz(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("OK\n"))
+	if resp.StatusCode != http.StatusCreated {
+		app.logger.Error("todo backend refused the todo", "status", resp.Status)
+		http.Error(w, "could not save the todo", http.StatusBadGateway)
+		return
+	}
+
+	todos, err := fetchTodos(r.Context())
+	if err != nil {
+		app.logger.Error(err.Error())
+		http.Error(w, "could not load the todos", http.StatusBadGateway)
+		return
+	}
+
+	if err := views.Todo(todos).Render(r.Context(), w); err != nil {
+		app.logger.Error(err.Error())
+	}
 }
