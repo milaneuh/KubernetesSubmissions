@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hashgenerator-cm
+  namespace: exercises
+data:
+  port: "3010"
+  message: "Hello World!"
+  file-content: |
+    This is the content from a file

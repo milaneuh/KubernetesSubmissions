@@ -79,8 +79,16 @@ func HashHandler(w http.ResponseWriter, r *http.Request) {
 		pongs = "0"
 	}
 
+	file_content, err := os.ReadFile("/config/file-content")
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "file-content not available yet", http.StatusServiceUnavailable)
+		return
+	}
+
+	message := os.Getenv("MESSAGE")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(strings.TrimSpace(string(log_v)) + ".\nPing / Pongs: " + pongs + "\n"))
+	w.Write([]byte("file content: " + string(file_content) + "\nenv variable: MESSAGE=" + message + "\n" + strings.TrimSpace(string(log_v)) + ".\nPing / Pongs: " + pongs + "\n"))
 }
 
 func PeriodicallyPrintHash(hash string) {

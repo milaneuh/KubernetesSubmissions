@@ -17,17 +17,34 @@ spec:
         - name: shared-image
           persistentVolumeClaim:
             claimName: image-claim
+        - name: config
+          configMap:
+            name: hashgenerator-cm
+            items:
+            - key: "file-content"
+              path: "file-content"
       containers:
         - name: hashgenerator-writer
-          image: m17an/hashgen:v8
+          image: m17an/hashgen:v9
           volumeMounts:
             - name: shared-image
               mountPath: /usr/src/app/files
         - name: hashgenerator-reader
-          image: m17an/hashgen:v8
+          image: m17an/hashgen:v9
           env:
             - name: PORT
-              value: "3010"
+              valueFrom:
+                configMapKeyRef:
+                  name: hashgenerator-cm
+                  key: port
+            - name: MESSAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: hashgenerator-cm
+                  key: message
           volumeMounts:
             - name: shared-image
               mountPath: /usr/src/app/files
+            - name: config
+              mountPath: /config
+              readOnly: true
