@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: todo-app-cm
+  namespace: project
+data:
+  port: "3000"
+  todo-backend-url: "http://todo-backend-svc:2345/api/todos"
+  image-path: "/usr/src/app/files/image.jpg"
+  image-url: "https://picsum.photos/1200"
+  image-max-age: "10m"
+  image-refresh-interval: "30s"

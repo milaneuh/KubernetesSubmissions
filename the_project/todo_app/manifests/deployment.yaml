@@ -19,12 +19,38 @@ spec:
             claimName: todo-image-claim
       containers:
         - name: todo-app
-          image: m17an/todo_app:v14
+          image: m17an/todo_app:v15
           env:
-          - name: PORT
-            value: "3000"
-          - name: IMAGE_PATH
-            value: "/usr/src/app/files/image.jpg"
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-app-cm
+                  key: port
+            - name: TODO_BACKEND_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-app-cm
+                  key: todo-backend-url
+            - name: IMAGE_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-app-cm
+                  key: image-path
+            - name: IMAGE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-app-cm
+                  key: image-url
+            - name: IMAGE_MAX_AGE
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-app-cm
+                  key: image-max-age
+            - name: IMAGE_REFRESH_INTERVAL
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-app-cm
+                  key: image-refresh-interval
           volumeMounts:
             - name: image-storage
               mountPath: /usr/src/app/files

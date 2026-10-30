@@ -22,6 +22,9 @@ type application struct {
 
 func main() {
 	port := os.Getenv("PORT")
+	if port == "" {
+		log.Fatal("missing required environment variable PORT")
+	}
 
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	slog.SetDefault(logger)

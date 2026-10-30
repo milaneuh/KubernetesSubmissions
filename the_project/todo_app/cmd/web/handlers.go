@@ -11,12 +11,12 @@ import (
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	todos, err := fetchTodos(r.Context())
+	todos, err := app.fetchTodos(r.Context())
 	if err != nil {
 		app.logger.Error(err.Error())
 	}
 
-	err = views.Home(imagePath(), todos).Render(r.Context(), w)
+	err = views.Home(app.cfg.imagePath, todos).Render(r.Context(), w)
 	if err != nil {
 		app.logger.Error(err.Error())
 		http.Error(w, http.StatusText(500), 500)
@@ -25,15 +25,13 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) image(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-cache")
-	http.ServeFile(w, r, imagePath())
+	http.ServeFile(w, r, app.cfg.imagePath)
 }
-
-const todoBackendURL = "http://todo-backend-svc:2345/api/todos"
 
 var backendClient = &http.Client{Timeout: 2 * time.Second}
 
-func fetchTodos(ctx context.Context) ([]string, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, todoBackendURL, nil)
+func (app *application) fetchTodos(ctx context.Context) ([]string, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, app.cfg.todoBackendURL, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +61,7 @@ func (app *application) newTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := backendClient.PostForm(todoBackendURL, url.Values{"todo-input": {todo}})
+	resp, err := backendClient.PostForm(app.cfg.todoBackendURL, url.Values{"todo-input": {todo}})
 	if err != nil {
 		app.logger.Error(err.Error())
 		http.Error(w, "could not reach the todo backend", http.StatusBadGateway)
@@ -77,7 +75,7 @@ func (app *application) newTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	todos, err := fetchTodos(r.Context())
+	todos, err := app.fetchTodos(r.Context())
 	if err != nil {
 		app.logger.Error(err.Error())
 		http.Error(w, "could not load the todos", http.StatusBadGateway)

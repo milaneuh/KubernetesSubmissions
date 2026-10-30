@@ -12,7 +12,4 @@ RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o /todo_app ./cmd/
 FROM gcr.io/distroless/static
 COPY --from=build /todo_app /todo_app
 
-ENV PORT=8080
-EXPOSE 8080
-
 CMD ["/todo_app"]

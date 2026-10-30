@@ -15,19 +15,21 @@ import (
 
 type application struct {
 	logger *slog.Logger
+	cfg    config
 }
 
 func main() {
-	port := os.Getenv("PORT")
+	cfg := loadConfig()
 
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	slog.SetDefault(logger)
 
-	go ImageLookupLoop()
-
 	app := &application{
 		logger: logger,
+		cfg:    cfg,
 	}
+
+	go app.ImageLookupLoop()
 
 	fileserver := http.FileServerFS(assets.StaticFiles)
 
@@ -39,39 +41,32 @@ func main() {
 	mux.HandleFunc("GET /image", app.image)
 	mux.HandleFunc("POST /new-todo", app.newTodo)
 
-	log.Println("Server started in port " + port)
-	err := http.ListenAndServe(":"+port, mux)
+	log.Println("Server started in port " + cfg.port)
+	err := http.ListenAndServe(":"+cfg.port, mux)
 	if err != nil {
 		log.Fatal("Could not start the server\n", err)
 	}
 
 }
 
-func ImageLookupLoop() {
+func (app *application) ImageLookupLoop() {
 	for {
-		if err := ImageStore(); err != nil {
+		if err := app.ImageStore(); err != nil {
 			slog.Error("image refresh failed, keeping the current image", "err", err)
 		}
-		time.Sleep(30 * time.Second)
+		time.Sleep(app.cfg.imageRefreshInterval)
 	}
 }
 
-func imagePath() string {
-	if p := os.Getenv("IMAGE_PATH"); p != "" {
-		return p
-	}
-	return "/usr/src/app/files/image.jpg"
-}
-
-func ImageStore() error {
-	path := imagePath()
+func (app *application) ImageStore() error {
+	path := app.cfg.imagePath
 	if !IsFilePresent(path) {
 		slog.Info("no image stored yet, pulling one", "path", path)
-		return PullImage(path)
+		return PullImage(app.cfg.imageURL, path)
 	}
-	if IsFileOlderThan(path, 10*time.Minute) {
-		slog.Info("image is older than 10 minutes, pulling a new one", "path", path)
-		return PullImage(path)
+	if IsFileOlderThan(path, app.cfg.imageMaxAge) {
+		slog.Info("image is too old, pulling a new one", "path", path, "max_age", app.cfg.imageMaxAge)
+		return PullImage(app.cfg.imageURL, path)
 	}
 	slog.Debug("image is still fresh", "path", path)
 	return nil
@@ -90,20 +85,20 @@ func IsFileOlderThan(path string, d time.Duration) bool {
 	return time.Since(stat.ModTime()) > d
 }
 
-func PullImage(path string) error {
+func PullImage(url, path string) error {
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 		return err
 	}
 
 	start := time.Now()
-	resp, err := http.Get("http://pingpong-svc:2345/ping")
+	resp, err := http.Get(url)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("picsum returned %s", resp.Status)
+		return fmt.Errorf("image source %s returned %s", url, resp.Status)
 	}
 
 	out, err := os.CreateTemp(filepath.Dir(path), "image-*.tmp")
