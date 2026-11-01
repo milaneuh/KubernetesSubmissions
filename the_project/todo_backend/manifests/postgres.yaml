@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: todo-db-cm
+  namespace: project
+data:
+  postgres-user: "todo"
+  postgres-db: "todos"
+  postgres-host: "todo-db-svc"
+  postgres-port: "5432"
+  postgres-password: "e2a9962077d437e04de044e3f8c5dd32bc93eb15f2eec0d3"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-db-svc
+  namespace: project
+  labels:
+    app: todo-db
+spec:
+  ports:
+    - port: 5432
+      name: postgres
+  clusterIP: None
+  selector:
+    app: todo-db
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: todo-db
+  namespace: project
+spec:
+  selector:
+    matchLabels:
+      app: todo-db
+  serviceName: todo-db-svc
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: todo-db
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: postgres
+          image: postgres:14.5
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-db-cm
+                  key: postgres-user
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-db-cm
+                  key: postgres-db
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-db-cm
+                  key: postgres-password
+          ports:
+            - containerPort: 5432
+              name: postgres
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi

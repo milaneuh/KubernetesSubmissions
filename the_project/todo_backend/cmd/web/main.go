@@ -7,6 +7,9 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/jackc/pgx/v5/pgxpool"
+
+	"todo_backend/internal/db"
 	"todo_backend/internal/modules/todo"
 )
 
@@ -29,9 +32,21 @@ func main() {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	slog.SetDefault(logger)
 
+	ctx := context.Background()
+
+	pool, err := pgxpool.New(ctx, os.Getenv("DATABASE_URL"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer pool.Close()
+
+	if _, err := pool.Exec(ctx, db.Schema); err != nil {
+		log.Fatal("could not create the schema: ", err)
+	}
+
 	app := &application{
 		logger: logger,
-		todos:  todo.New(),
+		todos:  todo.New(db.New(pool)),
 	}
 
 	mux := http.NewServeMux()
@@ -41,7 +56,7 @@ func main() {
 	mux.HandleFunc("POST /api/todos", app.newTodo)
 
 	log.Println("Server started in port " + port)
-	err := http.ListenAndServe(":"+port, mux)
+	err = http.ListenAndServe(":"+port, mux)
 	if err != nil {
 		log.Fatal("Could not start the server\n", err)
 	}

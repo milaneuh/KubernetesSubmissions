@@ -3,8 +3,8 @@ package todo
 import (
 	"context"
 	"errors"
-	"slices"
-	"sync"
+
+	"todo_backend/internal/db"
 )
 
 const maxTodoLength = 140
@@ -12,12 +12,11 @@ const maxTodoLength = 140
 var ErrInvalidTodo = errors.New("todo must be between 1 and 140 characters")
 
 type Module struct {
-	mu    sync.Mutex
-	todos []string
+	queries *db.Queries
 }
 
-func New() *Module {
-	return &Module{}
+func New(queries *db.Queries) *Module {
+	return &Module{queries: queries}
 }
 
 func (m *Module) CreateTodo(ctx context.Context, todo string) error {
@@ -25,14 +24,9 @@ func (m *Module) CreateTodo(ctx context.Context, todo string) error {
 		return ErrInvalidTodo
 	}
 
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	m.todos = append(m.todos, todo)
-	return nil
+	return m.queries.CreateTodo(ctx, todo)
 }
 
 func (m *Module) ListTodos(ctx context.Context) ([]string, error) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	return slices.Clone(m.todos), nil
+	return m.queries.ListTodos(ctx)
 }
