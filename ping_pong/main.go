@@ -1,52 +1,86 @@
 package main
 
 import (
+	"context"
+	_ "embed"
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strconv"
+
+	"github.com/jackc/pgx/v5/pgxpool"
+
+	"pingpong/db"
 )
 
-var counter int
+//go:embed schema.sql
+var schema string
+
+type application struct {
+	queries *db.Queries
+}
 
 func main() {
-	port := os.Getenv("PORT")
-	path := filePath()
+	port := mustEnv("PORT")
+	databaseURL := mustEnv("DATABASE_URL")
 
-	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+	ctx := context.Background()
+
+	pool, err := pgxpool.New(ctx, databaseURL)
+	if err != nil {
 		log.Fatal(err)
 	}
+	defer pool.Close()
 
-	// Full paths: the ingress forwards /pingpong... without stripping the prefix
-	http.HandleFunc("/pingpong", PingHandler)
-	http.HandleFunc("/pingpong/pings", PingsHandler)
+	if _, err := pool.Exec(ctx, schema); err != nil {
+		log.Fatal("could not create the schema: ", err)
+	}
+
+	queries := db.New(pool)
+	if err := queries.InitCounter(ctx); err != nil {
+		log.Fatal("could not initialize the counter: ", err)
+	}
+
+	app := &application{
+		queries: queries,
+	}
+
+	http.HandleFunc("/pingpong", app.PingHandler)
+	http.HandleFunc("/pingpong/pings", app.PingsHandler)
 
 	log.Println("Server started in port " + port)
-	http.ListenAndServe(":"+port, nil)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
-func filePath() string {
-	if p := os.Getenv("PONG_FILE"); p != "" {
-		return p
+func mustEnv(name string) string {
+	v := os.Getenv(name)
+	if v == "" {
+		log.Fatalf("missing required environment variable %s", name)
 	}
-	return "/usr/src/app/files/pingpong_output.txt"
+	return v
 }
 
-func PingHandler(w http.ResponseWriter, r *http.Request) {
-	counter += 1
-
-	err := os.WriteFile(filePath(), []byte(strconv.Itoa(counter)), 0644)
+func (app *application) PingHandler(w http.ResponseWriter, r *http.Request) {
+	counter, err := app.queries.IncrementCounter(r.Context())
 	if err != nil {
 		log.Println(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("pong " + strconv.Itoa(counter)))
+	w.Write([]byte("pong " + strconv.FormatInt(counter, 10)))
 }
 
 // PingsHandler returns the current count without incrementing it.
-func PingsHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) PingsHandler(w http.ResponseWriter, r *http.Request) {
+	counter, err := app.queries.GetCounter(r.Context())
+	if err != nil {
+		log.Println(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(strconv.Itoa(counter)))
+	w.Write([]byte(strconv.FormatInt(counter, 10)))
 }

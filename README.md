@@ -30,3 +30,4 @@ Each exercise has a GitHub release tagged with its number (e.g. `1.1`). Each lin
 - [2.4.](https://github.com/milaneuh/KubernetesSubmissions/tree/2.4)
 - [2.5.](https://github.com/milaneuh/KubernetesSubmissions/tree/2.5)
 - [2.6.](https://github.com/milaneuh/KubernetesSubmissions/tree/2.6)
+- [2.7.](https://github.com/milaneuh/KubernetesSubmissions/tree/2.7)

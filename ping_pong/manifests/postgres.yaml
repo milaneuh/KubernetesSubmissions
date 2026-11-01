@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pingp-psql-cm
+  namespace: exercises
+data:
+  postgres-password: "root"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pingp-psql-svc
+  namespace: exercises
+  labels:
+    app: pingp-psql-a
+spec:
+  ports:
+    - port: 5432
+      name: pingp-psql-port
+  clusterIP: None
+  selector:
+    app: pingp-psql-a
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingp-psql-sfs
+  namespace: exercises
+spec:
+  selector:
+    matchLabels:
+      app: pingp-psql-a
+  serviceName: 'pingp-psql-svc'
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: pingp-psql-a
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: pingp-psql-db
+          image: postgres:14.5
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: pingp-psql-cm
+                  key: postgres-password
+          ports:
+            - containerPort: 5432
+              name: pingp-psql-port
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ['ReadWriteOnce']
+        resources:
+          requests:
+            storage: 1Gi

@@ -13,18 +13,16 @@ spec:
       labels:
         app: pingpong
     spec:
-      volumes:
-        - name: shared-image
-          persistentVolumeClaim:
-            claimName: image-claim
       containers:
         - name: pingpong
-          image: m17an/pingpong:v6
+          image: m17an/pingpong:v7
           env:
             - name: PORT
               value: "3020"
-            - name: PONG_FILE
-              value: /usr/src/app/files/pingpong_output.txt
-          volumeMounts:
-            - name: shared-image
-              mountPath: /usr/src/app/files
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: pingp-psql-cm
+                  key: postgres-password
+            - name: DATABASE_URL
+              value: "postgres://postgres:$(POSTGRES_PASSWORD)@pingp-psql-svc:5432/postgres?sslmode=disable"
