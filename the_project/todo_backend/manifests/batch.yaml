@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: todo-batch-cm
+  namespace: project
+data:
+  todo-url: "http://todo-backend-svc:2345/api/todos"
+  wiki-url: "https://en.wikipedia.org/wiki/Special:Random"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: todo-app-cj-random-wikipedia
+  namespace: project
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: todo-app-batch-random-wikipedia
+            image: curlimages/curl:8.11.0
+            command:
+              - "/bin/sh"
+              - "-c"
+              - |
+                set -e
+
+                : "${WIKI_URL:?WIKI_URL is not set}"
+                : "${TODO_URL:?TODO_URL is not set}"
+
+                RANDOM_URL=$(curl -sSf -o /dev/null -w '%{redirect_url}' "$WIKI_URL")
+
+                if [ -z "$RANDOM_URL" ]; then
+                  echo "Got an empty URL from $WIKI_URL, not posting" >&2
+                  exit 1
+                fi
+
+                curl -sSf -X POST \
+                  --data-urlencode "todo-input=Read this wikipedia article: $RANDOM_URL" \
+                  "$TODO_URL"
+            env:
+              - name: WIKI_URL
+                valueFrom:
+                  configMapKeyRef:
+                    name: todo-batch-cm
+                    key: wiki-url
+              - name: TODO_URL
+                valueFrom:
+                  configMapKeyRef:
+                    name: todo-batch-cm
+                    key: todo-url
