@@ -21,7 +21,9 @@ type application struct {
 func main() {
 	cfg := loadConfig()
 
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	}))
 	slog.SetDefault(logger)
 
 	app := &application{
@@ -41,10 +43,11 @@ func main() {
 	mux.HandleFunc("GET /image", app.image)
 	mux.HandleFunc("POST /new-todo", app.newTodo)
 
-	log.Println("Server started in port " + cfg.port)
+	slog.Info("server started", "port", cfg.port)
 	err := http.ListenAndServe(":"+cfg.port, mux)
 	if err != nil {
-		log.Fatal("Could not start the server\n", err)
+		slog.Error("could not start the server", "err", err)
+		log.Fatal("Could not start the server", err)
 	}
 
 }

@@ -19,7 +19,7 @@ spec:
             claimName: todo-image-claim
       containers:
         - name: todo-app
-          image: m17an/todo_app:v15
+          image: m17an/todo_app:v16
           env:
             - name: PORT
               valueFrom:
