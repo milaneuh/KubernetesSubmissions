@@ -4,7 +4,6 @@ metadata:
   name: image-claim
   namespace: exercises
 spec:
-  storageClassName: my-example-pv # this is the name of the persistent volume we are claiming
   accessModes:
     - ReadWriteOnce
   resources:
