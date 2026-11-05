@@ -50,9 +50,12 @@ spec:
           ports:
             - containerPort: 5432
               name: pingp-psql-port
+
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql/data
+              subPath: data
+
   volumeClaimTemplates:
     - metadata:
         name: data
