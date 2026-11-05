@@ -47,6 +47,7 @@ func main() {
 
 	http.HandleFunc("/pingpong", app.PingHandler)
 	http.HandleFunc("/pingpong/pings", app.PingsHandler)
+	http.HandleFunc("GET /{$}", HealthHandler)
 
 	log.Println("Server started in port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
@@ -83,4 +84,9 @@ func (app *application) PingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(strconv.FormatInt(counter, 10)))
+}
+
+func HealthHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK\n"))
 }

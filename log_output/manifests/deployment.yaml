@@ -4,6 +4,8 @@ metadata:
   name: hashgenerator-dep
   namespace: exercises
 spec:
+  strategy:
+    type: Recreate
   replicas: 1
   selector:
     matchLabels:
@@ -29,6 +31,7 @@ spec:
           volumeMounts:
             - name: shared-image
               mountPath: /usr/src/app/files
+              subPath: image-claim
         - name: hashgenerator-reader
           image: m17an/hashgen:v9
           env:
@@ -45,6 +48,7 @@ spec:
           volumeMounts:
             - name: shared-image
               mountPath: /usr/src/app/files
+              subPath: image-claim
             - name: config
               mountPath: /config
               readOnly: true
