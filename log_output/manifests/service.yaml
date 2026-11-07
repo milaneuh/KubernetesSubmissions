@@ -4,7 +4,7 @@ metadata:
   name: hashgenerator-svc
   namespace: exercises
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: hashgenerator
   ports:
