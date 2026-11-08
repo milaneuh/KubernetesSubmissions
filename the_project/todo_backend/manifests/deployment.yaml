@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: todo-backend
-          image: m17an/todo_backend:v5
+          image: TODO_APP/BACKEND
           env:
             - name: PORT
               valueFrom:

@@ -21,7 +21,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: todo-app-batch-random-wikipedia
-            image: curlimages/curl:8.11.0
+            image: TODO_APP/BATCH
             command:
               - "/bin/sh"
               - "-c"

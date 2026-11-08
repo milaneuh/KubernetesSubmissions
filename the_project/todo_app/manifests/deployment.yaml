@@ -19,7 +19,7 @@ spec:
             claimName: todo-image-claim
       containers:
         - name: todo-app
-          image: m17an/todo_app:v16
+          image: TODO_APP/WEB
           env:
             - name: PORT
               valueFrom:
@@ -54,3 +54,4 @@ spec:
           volumeMounts:
             - name: image-storage
               mountPath: /usr/src/app/files
+              subPath: image-storage
