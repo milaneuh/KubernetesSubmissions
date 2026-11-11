@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: todo-batch-cm
-  namespace: project
+  namespace: NAMESPACE
 data:
   todo-url: "http://todo-backend-svc:2345/api/todos"
   wiki-url: "https://en.wikipedia.org/wiki/Special:Random"
@@ -11,7 +11,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: todo-app-cj-random-wikipedia
-  namespace: project
+  namespace: NAMESPACE
 spec:
   schedule: "0 * * * *"
   jobTemplate:

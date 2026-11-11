@@ -2,6 +2,8 @@ name: Release application
 
 on:
   push:
+    branches:
+      - develop
 
 permissions:
   contents: read
@@ -14,12 +16,13 @@ env:
   REGISTRY: europe-north1-docker.pkg.dev
   REPOSITORY: my-repository
   BRANCH: ${{ github.ref_name }}
+  NAMESPACE: develop
 
 jobs:
   build-publish-deploy:
     name: Build, Publish and Deploy
     runs-on: ubuntu-latest
-    environment: prod
+    environment: develop
 
     steps:
       - name: Checkout
@@ -66,8 +69,9 @@ jobs:
       - name: Deploy
         working-directory: the_project
         run: |-
+          kustomize edit set namespace $NAMESPACE
           kustomize edit set image TODO_APP/WEB=$WEB_IMAGE TODO_APP/BACKEND=$BACKEND_IMAGE
           kustomize build . | kubectl apply -f -
-          kubectl rollout status deployment todo-app -n project
-          kubectl rollout status deployment todo-backend -n project
-          kubectl get services -o wide -n project
+          kubectl rollout status deployment todo-app -n $NAMESPACE
+          kubectl rollout status deployment todo-backend -n $NAMESPACE
+          kubectl get services -o wide -n $NAMESPACE

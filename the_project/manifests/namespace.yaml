@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: project
+  name: NAMESPACE
   labels:
     team: project
   annotations:
