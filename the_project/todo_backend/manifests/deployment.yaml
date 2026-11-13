@@ -18,6 +18,10 @@ spec:
       containers:
         - name: todo-backend
           image: TODO_APP/BACKEND
+          readinessProbe:
+            httpGet:
+              path: /api/healthz
+              port: 3000
           env:
             - name: PORT
               valueFrom:
