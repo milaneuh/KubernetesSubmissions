@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: todo-backup-cm
+  namespace: NAMESPACE
+data:
+  bucket: "gs://dwk-gke-513717-backups"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: todo-backup-cj
+  namespace: NAMESPACE
+spec:
+  schedule: "0 3 * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          serviceAccountName: project-backup-ksa
+          initContainers:
+            - name: pg-dump
+              image: TODO_APP/POSTGRES
+              command:
+                - "/bin/sh"
+                - "-c"
+                - |
+                  set -e
+                  pg_dump -Fc -f /backup/todos.dump
+              env:
+                - name: PGHOST
+                  valueFrom:
+                    configMapKeyRef:
+                      name: todo-db-cm
+                      key: postgres-host
+                - name: PGPORT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: todo-db-cm
+                      key: postgres-port
+                - name: PGUSER
+                  valueFrom:
+                    configMapKeyRef:
+                      name: todo-db-cm
+                      key: postgres-user
+                - name: PGDATABASE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: todo-db-cm
+                      key: postgres-db
+                - name: PGPASSWORD
+                  valueFrom:
+                    configMapKeyRef:
+                      name: todo-db-cm
+                      key: postgres-password
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+          containers:
+            - name: upload
+              image: TODO_APP/GCLOUD
+              command:
+                - "/bin/sh"
+                - "-c"
+                - |
+                  set -e
+                  : "${BUCKET:?BUCKET is not set}"
+                  gcloud storage cp /backup/todos.dump "$BUCKET/todos-$(date -u +%Y%m%dT%H%M%SZ).dump"
+              env:
+                - name: BUCKET
+                  valueFrom:
+                    configMapKeyRef:
+                      name: todo-backup-cm
+                      key: bucket
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+          volumes:
+            - name: backup
+              emptyDir: {}
