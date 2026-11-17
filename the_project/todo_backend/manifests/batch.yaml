@@ -22,6 +22,10 @@ spec:
           containers:
           - name: todo-app-batch-random-wikipedia
             image: TODO_APP/BATCH
+            resources:
+              requests: {cpu: 5m, memory: 14Mi}
+              limits: {cpu: 15m, memory: 28Mi}
+
             command:
               - "/bin/sh"
               - "-c"

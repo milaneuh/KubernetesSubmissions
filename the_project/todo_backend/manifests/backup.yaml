@@ -24,6 +24,10 @@ spec:
           initContainers:
             - name: pg-dump
               image: TODO_APP/POSTGRES
+              resources:
+                requests: {cpu: 50m, memory: 128Mi}
+                limits: {cpu: 150m, memory: 256Mi}
+
               command:
                 - "/bin/sh"
                 - "-c"
@@ -62,6 +66,9 @@ spec:
           containers:
             - name: upload
               image: TODO_APP/GCLOUD
+              resources:
+                requests: {cpu: 50m, memory: 128Mi}
+                limits: {cpu: 150m, memory: 256Mi}
               command:
                 - "/bin/sh"
                 - "-c"
