@@ -24,6 +24,7 @@ func (app *application) newTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	slog.Info("todo created", "todo", todoInput)
 	w.WriteHeader(http.StatusCreated)
 }
 
