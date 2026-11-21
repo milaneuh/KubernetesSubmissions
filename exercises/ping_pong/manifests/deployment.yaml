@@ -33,5 +33,5 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 5
             httpGet:
-               path: /healthz
+               path: /health
                port: http

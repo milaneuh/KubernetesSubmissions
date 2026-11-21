@@ -1,15 +1,16 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ./volumes/persistentvolumeclaim.yaml
+  - ./manifests/exercises-namespace.yaml
+  - ./manifests/exercises-persistentvolumeclaim.yaml
   - ./log_output/manifests/config-map.yaml
   - ./log_output/manifests/service.yaml
   - ./log_output/manifests/deployment.yaml
   - ./ping_pong/manifests/postgres.yaml
   - ./ping_pong/manifests/service.yaml
   - ./ping_pong/manifests/deployment.yaml
-  - ./gateways/exerciesGateway.yaml
-  - ./http_routes/exercisesHttpRoute.yaml
+  - ./manifests/exercies-gateway.yaml
+  - ./manifests/exercises-httproute.yaml
 images:
   - name: m17an/hashgen
     newTag: v9

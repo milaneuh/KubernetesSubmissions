@@ -6,7 +6,6 @@ metadata:
 spec:
   parentRefs:
   - name: exercises-gateway
-    namespace: default
   rules:
   - matches:
     - path:

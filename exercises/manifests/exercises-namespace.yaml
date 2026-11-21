@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: exercises
+  labels:
+    team: exercises
+  annotations:
+    description: "Namespace for the exercises."

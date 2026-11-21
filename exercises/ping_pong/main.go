@@ -47,7 +47,7 @@ func main() {
 
 	http.HandleFunc("/pingpong", app.PingHandler)
 	http.HandleFunc("/pingpong/pings", app.PingsHandler)
-	http.HandleFunc("GET /healthz", HealthHandler)
+	http.HandleFunc("/health", HealthHandler)
 
 	log.Println("Server started in port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
