@@ -26,3 +26,12 @@ spec:
                   key: postgres-password
             - name: DATABASE_URL
               value: "postgres://postgres:$(POSTGRES_PASSWORD)@pingp-psql-svc:5432/postgres?sslmode=disable"
+          ports:
+            - name: http
+              containerPort: 3020
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            httpGet:
+               path: /healthz
+               port: http

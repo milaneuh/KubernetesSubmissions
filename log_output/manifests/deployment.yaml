@@ -52,3 +52,12 @@ spec:
             - name: config
               mountPath: /config
               readOnly: true
+          ports:
+            - name: http
+              containerPort: 3010
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            httpGet:
+               path: /healthz
+               port: http

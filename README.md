@@ -49,6 +49,10 @@ Each exercise has a GitHub release tagged with its number (e.g. `1.1`). Each lin
 - [3.10.](https://github.com/milaneuh/KubernetesSubmissions/tree/3.10)
 - [3.11.](https://github.com/milaneuh/KubernetesSubmissions/tree/3.11)
 
+### Chapter 5 — Update Strategies and Prometheus
+
+- [4.1.](https://github.com/milaneuh/KubernetesSubmissions/tree/4.1)
+
 ### DBaaS VS DIY
 #### DBaaS
 Database as a service (DBaaS) offers a simple database solution, where the cloud provider handles all of the infrastructure work regarding the database.

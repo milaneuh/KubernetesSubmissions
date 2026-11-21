@@ -31,6 +31,7 @@ func main() {
 
 	if port != "" {
 		http.HandleFunc("/", HashHandler)
+		http.HandleFunc("/healthz", healthz)
 
 		log.Println("Server started in port " + port)
 		http.ListenAndServe(":"+port, nil)
@@ -63,6 +64,11 @@ func fetchPongs() (string, error) {
 		return "", err
 	}
 	return strings.TrimSpace(string(body)), nil
+}
+
+func healthz(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK\n"))
 }
 
 func HashHandler(w http.ResponseWriter, r *http.Request) {
