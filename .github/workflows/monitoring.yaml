@@ -1,0 +1,61 @@
+name: Release monitoring
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'monitoring/**'
+      - '.github/workflows/monitoring.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+  GKE_CLUSTER: dwk-cluster
+  GKE_ZONE: europe-north1-b
+  NAMESPACE: monitoring
+
+jobs:
+  deploy:
+    name: Deploy monitoring stack
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: "${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}"
+          service_account: "${{ secrets.SERVICE_ACCOUNT }}"
+
+      - name: 'Set up Cloud SDK'
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: 'Get GKE credentials'
+        uses: 'google-github-actions/get-gke-credentials@v3'
+        with:
+          cluster_name: '${{ env.GKE_CLUSTER }}'
+          project_id: '${{ env.PROJECT_ID }}'
+          location: '${{ env.GKE_ZONE }}'
+
+      - name: Set up Kustomize
+        uses: imranismail/setup-kustomize@v3
+
+      - name: Deploy
+        working-directory: monitoring
+        run: |-
+          kustomize build --enable-helm . > monitoring.yaml
+          yq 'select(.kind == "CustomResourceDefinition")' monitoring.yaml | kubectl apply --server-side -f -
+          kubectl wait --for=condition=Established crd/alloys.collectors.grafana.com --timeout=60s
+          kubectl apply --server-side -f monitoring.yaml
+          kubectl rollout status deployment prom-prometheus-server -n $NAMESPACE
+          kubectl rollout status statefulset loki -n $NAMESPACE
+          kubectl rollout status deployment k8smon-alloy-operator -n $NAMESPACE
+          kubectl rollout status deployment grafana -n $NAMESPACE
+          kubectl get pods,svc -n $NAMESPACE
