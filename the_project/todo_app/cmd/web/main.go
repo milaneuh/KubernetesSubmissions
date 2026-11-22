@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sync/atomic"
 	"time"
 	"todo_app/assets"
 )
@@ -16,6 +17,7 @@ import (
 type application struct {
 	logger *slog.Logger
 	cfg    config
+	broken atomic.Bool
 }
 
 func main() {
@@ -42,9 +44,11 @@ func main() {
 	mux.HandleFunc("GET /{$}", app.home)
 	mux.HandleFunc("GET /image", app.image)
 	mux.HandleFunc("POST /new-todo", app.newTodo)
+	mux.HandleFunc("POST /break", app.breakApp)
+	mux.HandleFunc("GET /healthz", app.healthz)
 
 	slog.Info("server started", "port", cfg.port)
-	err := http.ListenAndServe(":"+cfg.port, mux)
+	err := http.ListenAndServe(":"+cfg.port, app.failWhenBroken(mux))
 	if err != nil {
 		slog.Error("could not start the server", "err", err)
 		log.Fatal("Could not start the server", err)

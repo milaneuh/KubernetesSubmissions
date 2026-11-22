@@ -52,6 +52,7 @@ Each exercise has a GitHub release tagged with its number (e.g. `1.1`). Each lin
 ### Chapter 5 — Update Strategies and Prometheus
 
 - [4.1.](https://github.com/milaneuh/KubernetesSubmissions/tree/4.1)
+- [4.2.](https://github.com/milaneuh/KubernetesSubmissions/tree/4.2)
 
 ### DBaaS VS DIY
 #### DBaaS

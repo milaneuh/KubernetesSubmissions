@@ -5,5 +5,6 @@ templ Home(image_path string, todos []string) {
 		<h1>Hello World!</h1>
 		<img src="/image" alt="Random picture from Lorem Picsum"/>
 		@TodoList(todos)
+		<button hx-post="/break" hx-confirm="Break the app?" style="background-color: #c0392b; color: white;">Break the app</button>
 	}
 }

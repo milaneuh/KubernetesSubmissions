@@ -6,11 +6,13 @@ resources:
   - ./manifests/todo-app-persistentvolumeclaim.yaml
   - ./todo_backend/manifests/config-map.yaml
   - ./todo_backend/manifests/postgres.yaml
+  - ./todo_backend/manifests/backend-config.yaml
   - ./todo_backend/manifests/service.yaml
   - ./todo_backend/manifests/deployment.yaml
   - ./todo_backend/manifests/batch.yaml
   - ./todo_backend/manifests/backup.yaml
   - ./todo_app/manifests/config-map.yaml
+  - ./todo_app/manifests/backend-config.yaml
   - ./todo_app/manifests/service.yaml
   - ./todo_app/manifests/deployment.yaml
   - ./manifests/ingress.yaml

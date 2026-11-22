@@ -91,3 +91,25 @@ func (app *application) newTodo(w http.ResponseWriter, r *http.Request) {
 		app.logger.Error("could not render the todos", "err", err.Error())
 	}
 }
+
+func (app *application) breakApp(w http.ResponseWriter, r *http.Request) {
+	app.broken.Store(true)
+	app.logger.Warn("the app has been broken on purpose")
+	w.Header().Set("HX-Refresh", "true")
+	w.WriteHeader(http.StatusOK)
+}
+
+func (app *application) healthz(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK\n"))
+}
+
+func (app *application) failWhenBroken(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if app.broken.Load() {
+			http.Error(w, "the app is broken", http.StatusInternalServerError)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}

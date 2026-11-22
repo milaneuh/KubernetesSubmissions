@@ -60,3 +60,18 @@ spec:
             - name: image-storage
               mountPath: /usr/src/app/files
               subPath: image-storage
+          ports:
+            - name: http
+              containerPort: 3000
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            httpGet:
+               path: /healthz
+               port: http
+          livenessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            httpGet:
+               path: /healthz
+               port: http
