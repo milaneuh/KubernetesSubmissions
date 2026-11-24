@@ -1,0 +1,55 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: exercises
+spec:
+  sourceRepos:
+    - https://github.com/milaneuh/KubernetesSubmissions.git
+  destinations:
+    - server: 'https://kubernetes.default.svc'
+      namespace: exercises
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: project-prod
+spec:
+  sourceRepos:
+    - https://github.com/milaneuh/KubernetesSubmissions.git
+  destinations:
+    - server: 'https://kubernetes.default.svc'
+      namespace: project
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: project-develop
+spec:
+  sourceRepos:
+    - https://github.com/milaneuh/KubernetesSubmissions.git
+  destinations:
+    - server: 'https://kubernetes.default.svc'
+      namespace: develop
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: monitoring
+spec:
+  sourceRepos:
+    - https://github.com/milaneuh/KubernetesSubmissions.git
+  destinations:
+    - server: 'https://kubernetes.default.svc'
+      namespace: monitoring
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'

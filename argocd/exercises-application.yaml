@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: exercises
+  namespace: argocd
+spec:
+  project: exercises
+  source:
+    repoURL: https://github.com/milaneuh/KubernetesSubmissions.git
+    targetRevision: main
+    path: exercises/
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: exercises
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - PruneLast=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
