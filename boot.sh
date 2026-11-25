@@ -29,6 +29,9 @@ if ! gcloud container clusters describe "$CLUSTER" --zone "$ZONE" --project "$PR
 		--num-nodes=4 \
 		--machine-type=e2-small \
 		--gateway-api=standard \
+		--logging=NONE \
+		--monitoring=NONE \
+		--no-enable-managed-prometheus \
 		--workload-pool="$PROJECT".svc.id.goog
 fi
 

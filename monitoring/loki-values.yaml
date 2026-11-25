@@ -1,8 +1,5 @@
 deploymentMode: SingleBinary
 
-singleBinary:
-  replicas: 1
-
 backend:
   replicas: 0
 read:
@@ -26,3 +23,25 @@ loki:
   storage:
     type: filesystem
   useTestSchema: true
+
+singleBinary:
+  replicas: 1
+  extraEnv:
+    - name: GOMEMLIMIT
+      value: 300MiB
+  resources:
+    requests:
+      memory: 192Mi
+    limits:
+      memory: 384Mi
+
+gateway:
+  resources:
+    requests:
+      memory: 16Mi
+    limits:
+      memory: 64Mi
+
+sidecar:
+  rules:
+    enabled: false

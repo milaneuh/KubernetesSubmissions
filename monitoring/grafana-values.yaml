@@ -17,3 +17,16 @@ datasources:
           httpHeaderName1: X-Scope-OrgID
         secureJsonData:
           httpHeaderValue1: "1"
+
+resources:
+  requests:
+    memory: 192Mi
+  limits:
+    memory: 320Mi
+
+grafana.ini:
+  unified_alerting:
+    enabled: false
+  analytics:
+    reporting_enabled: false
+    check_for_updates: false

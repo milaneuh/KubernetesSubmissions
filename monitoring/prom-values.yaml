@@ -3,3 +3,32 @@ alertmanager:
 
 prometheus-pushgateway:
   enabled: false
+
+server:
+  resources:
+    requests:
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+
+configmapReload:
+  prometheus:
+    resources:
+      requests:
+        memory: 16Mi
+      limits:
+        memory: 32Mi
+
+kube-state-metrics:
+  resources:
+    requests:
+      memory: 32Mi
+    limits:
+      memory: 64Mi
+
+prometheus-node-exporter:
+  resources:
+    requests:
+      memory: 16Mi
+    limits:
+      memory: 32Mi
