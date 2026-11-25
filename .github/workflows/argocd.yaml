@@ -52,6 +52,6 @@ jobs:
         run: |-
           kustomize build . > argocd.yaml
           yq 'select(.kind == "CustomResourceDefinition")' argocd.yaml | kubectl apply --server-side -f -
-          kubectl wait --for=condition=Established crd/applications.argoproj.io crd/appprojects.argoproj.io --timeout=60s
+          until kubectl wait --for=condition=Established crd/applications.argoproj.io crd/appprojects.argoproj.io --timeout=60s; do sleep 2; done
           kubectl apply --server-side -f argocd.yaml
           kubectl rollout status deployment argocd-server -n $NAMESPACE
