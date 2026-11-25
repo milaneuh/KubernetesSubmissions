@@ -1,19 +1,21 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ./manifests/exercises-namespace.yaml
-  - ./manifests/exercises-persistentvolumeclaim.yaml
-  - ./log_output/manifests/config-map.yaml
-  - ./log_output/manifests/service.yaml
-  - ./log_output/manifests/deployment.yaml
-  - ./ping_pong/manifests/analysis-template.yaml
-  - ./ping_pong/manifests/postgres.yaml
-  - ./ping_pong/manifests/service.yaml
-  - ./ping_pong/manifests/rollout.yaml
-  - ./manifests/exercies-gateway.yaml
-  - ./manifests/exercises-httproute.yaml
+- ./manifests/exercises-namespace.yaml
+- ./manifests/exercises-persistentvolumeclaim.yaml
+- ./log_output/manifests/config-map.yaml
+- ./log_output/manifests/service.yaml
+- ./log_output/manifests/deployment.yaml
+- ./ping_pong/manifests/analysis-template.yaml
+- ./ping_pong/manifests/postgres.yaml
+- ./ping_pong/manifests/service.yaml
+- ./ping_pong/manifests/rollout.yaml
+- ./manifests/exercies-gateway.yaml
+- ./manifests/exercises-httproute.yaml
 images:
-  - name: m17an/hashgen
-    newTag: v9
-  - name: m17an/pingpong
-    newTag: v9
+- name: m17an/hashgen
+  newName: europe-north1-docker.pkg.dev/dwk-gke-513717/my-repository/hashgen
+  newTag: main-b6fba496d86a83a611e6f769ff2262d25ae1bb5f
+- name: m17an/pingpong
+  newName: europe-north1-docker.pkg.dev/dwk-gke-513717/my-repository/pingpong
+  newTag: main-b6fba496d86a83a611e6f769ff2262d25ae1bb5f
