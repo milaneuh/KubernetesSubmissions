@@ -23,14 +23,12 @@ spec:
       port: 2345
   - matches:
     - path:
-        type: PathPrefix
+        type: Exact
         value: /
     filters:
-      - type: URLRewrite
-        urlRewrite:
+      - type: RequestRedirect
+        requestRedirect:
           path:
-            type: ReplacePrefixMatch
-            replacePrefixMatch: /pingpong
-    backendRefs:
-    - name: pingpong-svc
-      port: 2345
+            type: ReplaceFullPath
+            replaceFullPath: /pingpong
+          statusCode: 302
