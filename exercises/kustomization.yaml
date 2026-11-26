@@ -16,7 +16,7 @@ resources:
 images:
 - name: m17an/hashgen
   newName: europe-north1-docker.pkg.dev/dwk-gke-513717/my-repository/hashgen
-  newTag: main-e3b485097e5676fba5486d2be54c4c621ae9ebd5
+  newTag: main-394c4d74797fab2c4ea52f92c75dd7962b726665
 - name: m17an/pingpong
   newName: europe-north1-docker.pkg.dev/dwk-gke-513717/my-repository/pingpong
-  newTag: main-e3b485097e5676fba5486d2be54c4c621ae9ebd5
+  newTag: main-394c4d74797fab2c4ea52f92c75dd7962b726665
