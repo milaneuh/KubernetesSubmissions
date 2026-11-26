@@ -9,6 +9,7 @@ resources:
 - ./ping_pong/manifests/analysis-template.yaml
 - ./ping_pong/manifests/postgres.yaml
 - ./ping_pong/manifests/service.yaml
+- ./ping_pong/manifests/healthcheck-policy.yaml
 - ./ping_pong/manifests/rollout.yaml
 - ./manifests/exercies-gateway.yaml
 - ./manifests/exercises-httproute.yaml
