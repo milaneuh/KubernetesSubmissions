@@ -3,3 +3,5 @@ CREATE TABLE IF NOT EXISTS todos (
   content    text NOT NULL,
   created_at timestamptz NOT NULL DEFAULT now()
 );
+
+ALTER TABLE todos ADD COLUMN IF NOT EXISTS done boolean NOT NULL DEFAULT false;

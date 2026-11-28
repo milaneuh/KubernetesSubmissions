@@ -12,4 +12,5 @@ type Todo struct {
 	ID        int64
 	Content   string
 	CreatedAt pgtype.Timestamptz
+	Done      bool
 }

@@ -44,6 +44,7 @@ func main() {
 	mux.HandleFunc("GET /{$}", app.home)
 	mux.HandleFunc("GET /image", app.image)
 	mux.HandleFunc("POST /new-todo", app.newTodo)
+	mux.HandleFunc("PUT /todos/{id}", app.markTodoDone)
 	mux.HandleFunc("POST /break", app.breakApp)
 	mux.HandleFunc("GET /healthz", app.healthz)
 

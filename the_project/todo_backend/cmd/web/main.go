@@ -15,7 +15,8 @@ import (
 
 type Todos interface {
 	CreateTodo(ctx context.Context, todo string) error
-	ListTodos(ctx context.Context) ([]string, error)
+	ListTodos(ctx context.Context) ([]todo.Todo, error)
+	MarkTodoDone(ctx context.Context, id int64) error
 }
 
 type application struct {
@@ -58,6 +59,7 @@ func main() {
 	mux.HandleFunc("GET /api/healthz", app.healthz)
 	mux.HandleFunc("GET /api/todos", app.listTodos)
 	mux.HandleFunc("POST /api/todos", app.newTodo)
+	mux.HandleFunc("PUT /api/todos/{id}", app.markTodoDone)
 
 	slog.Info("server started", "port", port)
 	err = http.ListenAndServe(":"+port, mux)

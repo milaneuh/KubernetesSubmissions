@@ -55,6 +55,7 @@ Each exercise has a GitHub release tagged with its number (e.g. `1.1`). Each lin
 - [4.2.](https://github.com/milaneuh/KubernetesSubmissions/tree/4.2)
 - [4.3.](https://github.com/milaneuh/KubernetesSubmissions/tree/4.3)
 - [4.4.](https://github.com/milaneuh/KubernetesSubmissions/tree/4.4)
+- [4.5.](https://github.com/milaneuh/KubernetesSubmissions/tree/4.5)
 
 ### DBaaS VS DIY
 #### DBaaS

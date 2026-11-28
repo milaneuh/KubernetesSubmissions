@@ -19,25 +19,43 @@ func (q *Queries) CreateTodo(ctx context.Context, content string) error {
 }
 
 const listTodos = `-- name: ListTodos :many
-SELECT content FROM todos ORDER BY id
+SELECT id, content, done FROM todos ORDER BY id
 `
 
-func (q *Queries) ListTodos(ctx context.Context) ([]string, error) {
+type ListTodosRow struct {
+	ID      int64
+	Content string
+	Done    bool
+}
+
+func (q *Queries) ListTodos(ctx context.Context) ([]ListTodosRow, error) {
 	rows, err := q.db.Query(ctx, listTodos)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []string
+	var items []ListTodosRow
 	for rows.Next() {
-		var content string
-		if err := rows.Scan(&content); err != nil {
+		var i ListTodosRow
+		if err := rows.Scan(&i.ID, &i.Content, &i.Done); err != nil {
 			return nil, err
 		}
-		items = append(items, content)
+		items = append(items, i)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 	return items, nil
+}
+
+const markTodoDone = `-- name: MarkTodoDone :execrows
+UPDATE todos SET done = true WHERE id = $1
+`
+
+func (q *Queries) MarkTodoDone(ctx context.Context, id int64) (int64, error) {
+	result, err := q.db.Exec(ctx, markTodoDone, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }

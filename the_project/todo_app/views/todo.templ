@@ -1,12 +1,31 @@
 package views
 
-templ Todo(todos []string) {
+import "fmt"
+
+type TodoItem struct {
+	ID      int64  `json:"id"`
+	Content string `json:"content"`
+	Done    bool   `json:"done"`
+}
+
+templ Todo(todos []TodoItem) {
 	for _, todo := range todos {
 		<li
 			class="todo"
-			style="padding: 0.75rem 1rem; border: 1px solid var(--b-border); border-radius: 6px; background-color: var(--b-bg-2);"
+			style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; border: 1px solid var(--b-border); border-radius: 6px; background-color: var(--b-bg-2);"
 		>
-			{ todo }
+			if todo.Done {
+				<s style="opacity: 0.6;">{ todo.Content }</s>
+				<strong style="color: #2e7d32;">Done</strong>
+			} else {
+				<span>{ todo.Content }</span>
+				<button
+					hx-put={ fmt.Sprintf("/todos/%d", todo.ID) }
+					hx-target="#todo-list"
+					hx-swap="innerHTML"
+					style="margin: 0;"
+				>Mark done</button>
+			}
 		</li>
 	}
 }
